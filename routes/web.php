@@ -34,6 +34,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\CheckoutController;
 
+use App\Http\Controllers\MoviesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -378,3 +379,7 @@ Route::middleware(['auth','role:admin'])->group(function () {
 ///////// Frontend Route End /////////
 
 require __DIR__.'/auth.php';
+
+
+Route::get('/movies/create', [MoviesController::class, 'create']);
+Route::get('/movies/{id}', [MoviesController::class, 'show']);
