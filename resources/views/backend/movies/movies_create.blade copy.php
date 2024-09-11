@@ -214,27 +214,45 @@
 
     <!-- Movie Tags -->
     <script>
-        $(function() {
-            var genres = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.whitespace,
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
-                prefetch: {
-                    url: "/movies-genre",
-                    cache: false,
-                }
-            });
-
-            genres.initialize();
-
-            $('#genres').tagsinput({
-                typeaheadjs: {
-                    name: 'genres',
-                    source: genres.ttAdapter()
-                },
-                confirmKeys: [13, 44], // This allows pressing Enter or comma to add tags
-            });
+    $(document).ready(function() {
+        // Initialize Tagify with AJAX prefetch
+        var genreInput = document.querySelector('#genres');
+        var tagify = new Tagify(genreInput, {
+            delimiters: ",",
+            whitelist: [], // Start with an empty list, and populate dynamically
+            dropdown: {
+                maxItems: 20, // Limit the number of suggestions to display
+                enabled: 1, // Show suggestions immediately when typing
+                closeOnSelect: false, // Keep the dropdown open after selecting a suggestion
+                highlightFirst: true, // Highlight the first suggestion
+            }
         });
-    </script>
+
+        // Fetch genres from the database as the user types
+        tagify.on('input', function(e) {
+            var value = e.detail.value;
+
+            if (value.length >= 2) { // Fetch only when the input length is 2 or more characters
+                $.ajax({
+                    url: '/movies-genre', // Your endpoint to fetch genres
+                    data: { query: value }, // Pass the typed input to the server (optional)
+                    success: function(response) {
+                        // Update Tagify's whitelist with the new data
+                        var genres = response.map(function(genre) {
+                            return genre.name; // Adjust based on your API response format
+                        });
+
+                        tagify.settings.whitelist = genres; // Update the whitelist
+                        tagify.dropdown.show(value); // Re-show the dropdown with new data
+                    },
+                    error: function() {
+                        console.log('Failed to fetch genres.');
+                    }
+                });
+            }
+        });
+    });
+</script>
 
     <!-- Movie categories -->
     <script>
@@ -386,7 +404,6 @@
 @push('scripts')
     <!-- tagsinput -->
     <script src="{{ url('backend/plugins/input-tags/js/tagsinput.js') }}"></script>
-
 
     <!-- typeahead -->
     <script src="{{ asset('backend/plugins/typeahead/typeahead.bundle.js') }}"></script>

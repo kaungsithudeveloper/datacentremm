@@ -1,0 +1,41 @@
+/* Single Preview custom image */
+.file-input-container {
+    border: 2px dashed #ddd;
+    padding: 5px;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+}
+
+.file-input-container.dragover {
+    border-color: #007bff;
+}
+
+.file-input-label {
+    color: #666;
+}
+
+.file-input-preview {
+    display: none;
+}
+
+.remove-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff0000;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    width: 30px;
+    height: 30px;
+    display: none;
+}
+
+.file-input-preview {
+    display: block;
+    border-radius: 5px;
+    object-fit: cover;
+}

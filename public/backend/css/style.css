@@ -76038,3 +76038,23 @@ textarea.form-control {
 }
 
 
+.tagify__dropdown {
+    background-color: #f9f9f9; /* Background color of the dropdown */
+}
+
+.tagify__dropdown__item {
+    background-color: #ffffff; /* Background color of each item */
+    color: #333; /* Text color of each item */
+    padding: 8px; /* Padding for each item */
+    border-bottom: 1px solid #ddd; /* Border between items */
+}
+
+.tagify__dropdown__item--highlighted {
+    background-color: #d9eaff; /* Background color of the highlighted item */
+    color: #007bff; /* Text color of the highlighted item */
+}
+
+.tagify__dropdown__item--disabled {
+    background-color: #f1f1f1; /* Background color for disabled items */
+    color: #999; /* Text color for disabled items */
+}

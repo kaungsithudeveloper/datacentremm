@@ -35,6 +35,7 @@ use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\CheckoutController;
 
 use App\Http\Controllers\MoviesController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -182,17 +183,29 @@ Route::middleware(['auth','role:admin'])->group(function () {
         Route::post('/backend/movies/update',  'MovieUpdate')->name('movies.update');
         Route::get('/backend/movies/delete/{id}' ,  'MovieDestroy')->name('movies.delete');
 
-        Route::get('/movies-genre',function(){
-            $genres=Genre::where('type', 'movie')->pluck('name')->toArray();
-            return response($genres);
+        Route::get('/movies-genre', function(Request $request) {
+            // Search for genres that match the query
+            $query = $request->input('query');
+
+            $genres = Genre::where('type', 'movie')->where('name', 'LIKE', '%' . $query . '%')->get();
+
+            // Return the genres in JSON format
+            return response()->json($genres->pluck('name'));
         });
+
         Route::get('/movies-category',function(){
             $categories=Category::where('type', 'movie')->pluck('name')->toArray();
             return response($categories);
         });
-        Route::get('/cast',function(){
-            $casts=Cast::all()->pluck('name')->toArray();
-            return response($casts);
+
+        Route::get('/cast', function(Request $request) {
+            // Search for casts that match the query
+            $query = $request->input('query');
+
+            $casts = Cast::where('name', 'LIKE', '%' . $query . '%')->get();
+
+            // Return the casts in JSON format
+            return response()->json($casts->pluck('name'));
         });
 
     });

@@ -35,6 +35,11 @@
                                     {{ $genre['name'] }}@if(!$loop->last),@endif
                                 @endforeach
                             </p>
+                            <p><strong>Tagline:</strong> {{ $movie['tagline'] }}</p>
+                            <p><strong>Release Date:</strong> {{ $movie['release_date'] }}</p>
+                            <p><strong>Runtime:</strong> {{ $movie['runtime'] }} minutes</p>
+                            <p><strong>Budget:</strong> ${{ number_format($movie['budget'], 2) }}</p>
+                            <p><strong>Revenue:</strong> ${{ number_format($movie['revenue'], 2) }}</p>
                             <p><strong>Overview:</strong> {{ $movie['overview'] }}</p>
                             <p><strong>Language:</strong> {{ $movie['original_language'] }}</p>
                             <p><strong>Popularity:</strong> {{ $movie['popularity'] }}</p>
