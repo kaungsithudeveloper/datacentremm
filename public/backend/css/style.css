@@ -76058,3 +76058,13 @@ textarea.form-control {
     background-color: #f1f1f1; /* Background color for disabled items */
     color: #999; /* Text color for disabled items */
 }
+
+
+.tagify__dropdown.cast-dropdown {
+    position: absolute !important;
+    top: 100% !important; /* This makes sure the dropdown appears below the input */
+    right: 50 !important;
+
+    z-index: 1000; /* Make sure the dropdown appears above other elements */
+}
+

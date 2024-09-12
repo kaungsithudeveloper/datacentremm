@@ -59,7 +59,7 @@ class MovieController extends Controller
 
     public function MovieStore(Request $request)
     {
-        //dd($request->all());
+        dd($request->all());
         // Validate the request
         $validatedData = $request->validate([
             'code' => 'required',
