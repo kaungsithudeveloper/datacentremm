@@ -120,6 +120,15 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-4">
+                                                        <label for="category_id" class="form-label">Categories:</label>
+                                                        <input type="text" name="category_id" class="form-control" id="categories" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-4">
                                                         <label for="genre_id" class="form-label">Genres:</label>
                                                         <input type="text" name="genre_id" class="form-control" id="genres" required>
                                                     </div>
@@ -280,44 +289,110 @@
         var apiKey = '7b5ce55c5d5abf15de97db97fc26c6df';
         var $movieTitle = $('#movieTitle');
         var $suggestions = $('#suggestions');
-        var castInput = document.querySelector('#casts'); // The input for cast data
+
+        // Initialize Tagify for Casts
+        var castInput = document.querySelector('#casts');
         var tagifyCasts = new Tagify(castInput, {
             delimiters: ",",
             dropdown: {
-                enabled: 0
+                enabled: 1, // Enable dropdown suggestions
+                position: "text", // Set the dropdown to appear relative to the input text
+
             }
         });
 
-        // Initialize Tagify for genres (already done in your script)
+        // Initialize Tagify for Genres
         var genreInput = document.querySelector('#genres');
-        var tagify = new Tagify(genreInput, {
+        var tagifyGenres = new Tagify(genreInput, {
             delimiters: ",",
             dropdown: {
                 enabled: 0
             }
         });
 
-        // Fetch cast data for the selected movie
-        function fetchMovieCasts(movieId) {
+        // Initialize Tagify for Genres
+        var categoryInput = document.querySelector('#categories');
+        var tagifyCategories = new Tagify(categoryInput, {
+            delimiters: ",",
+            dropdown: {
+                enabled: 0
+            }
+        });
+
+        function fetchCategories(query) {
             $.ajax({
-                url: 'https://api.themoviedb.org/3/movie/' + movieId + '/credits',
-                data: {
-                    api_key: apiKey
-                },
+                url: "/movies-category",
+                data: { query: query },
+                method: "GET",
                 success: function(response) {
-                    var casts = response.cast.map(function(castMember) {
-                        return castMember.name;
-                    });
-                    // Clear existing cast tags
-                    tagifyCasts.removeAllTags();
-                    // Add new cast tags
-                    tagifyCasts.addTags(casts);
+                    console.log("Categories fetched:", response);  // Log the categories response for debugging
+                    tagifyCategories.settings.whitelist = response;
+                    tagifyCategories.dropdown.show(query);
                 },
-                error: function() {
-                    alert('Failed to fetch cast data.');
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Failed to fetch categories:", textStatus, errorThrown);
                 }
             });
         }
+
+
+        // Fetch genres from the database
+        function fetchGenres(query) {
+            $.ajax({
+                url: "/movies-genre", // API endpoint for genres
+                data: { query: query }, // Send the typed query
+                method: "GET",
+                success: function(response) {
+                    // Update Tagify whitelist and show suggestions
+                    tagifyGenres.settings.whitelist = response;
+                    tagifyGenres.dropdown.show(query);
+                },
+                error: function() {
+                    console.error("Failed to fetch genres from the server.");
+                }
+            });
+        }
+
+        // Fetch casts from the database
+        function fetchCasts(query) {
+            $.ajax({
+                url: "/cast", // API endpoint for casts
+                data: { query: query }, // Send the typed query
+                method: "GET",
+                success: function(response) {
+                    // Update Tagify whitelist and show suggestions
+                    tagifyCasts.settings.whitelist = response;
+                    tagifyCasts.dropdown.show(query);
+                },
+                error: function() {
+                    console.error("Failed to fetch cast data from the server.");
+                }
+            });
+        }
+
+        // Event listener for genres input
+        tagifyGenres.on('input', function(e) {
+            var value = e.detail.value;
+            if (value.length > 1) {
+                fetchGenres(value); // Fetch genres only if input is longer than 1 character
+            }
+        });
+
+        // Event listener for casts input
+        tagifyCasts.on('input', function(e) {
+            var value = e.detail.value;
+            if (value.length > 1) {
+                fetchCasts(value); // Fetch casts only if input is longer than 1 character
+            }
+        });
+
+        // Event listener for categories input
+        tagifyCategories.on('input', function(e) {
+            var value = e.detail.value;
+            if (value.length > 1) {
+                fetchCategories(value); // Fetch categories only if input is longer than 1 character
+            }
+        });
 
         // Your existing code for fetching movie details
         $movieTitle.on('input', function() {
@@ -340,71 +415,7 @@
                                     .data('movie', movie)
                                     .on('click', function() {
                                         var selectedMovie = $(this).data('movie');
-
-                                        // Fetch full movie details
-                                        $.ajax({
-                                            url: 'https://api.themoviedb.org/3/movie/' + selectedMovie.id,
-                                            data: {
-                                                api_key: apiKey
-                                            },
-                                            success: function(movieDetails) {
-                                                $movieTitle.val(movieDetails.title);
-                                                $('#movieId').val(movieDetails.id);
-                                                $('#description').val(movieDetails.overview);
-                                                var posterPath = movieDetails.poster_path;
-                                                var posterUrl = posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '{{ url('upload/blog_images.png') }}';
-                                                $('#photoPreview').attr('src', posterUrl);
-
-                                                var releaseYear = movieDetails.release_date ? new Date(movieDetails.release_date).getFullYear() : 'N/A';
-                                                $('#release_date').val(releaseYear);
-
-                                                var runtime = movieDetails.runtime ? movieDetails.runtime + ' minutes' : 'N/A';
-                                                $('#runtime').val(runtime);
-
-                                                var rating = movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) : 'N/A';
-                                                $('#rating').val(rating);
-
-                                                // Fetch genres (already handled in your script)
-                                                var genres = movieDetails.genres.map(function(genre) {
-                                                    return genre.name + ' Movies';
-                                                });
-
-                                                    function fetchGenres(query) {
-                                                        $.ajax({
-                                                            url: "/movies-genre", // Your API endpoint for fetching genres
-                                                            data: { query: query }, // Send the typed query as parameter
-                                                            method: "GET",
-                                                            success: function(response) {
-                                                                // Update Tagify whitelist with the response data
-                                                                tagify.settings.whitelist = response;
-                                                                tagify.dropdown.show(query); // Show the updated suggestions
-                                                            },
-                                                            error: function() {
-                                                                console.error("Failed to fetch genres from the server.");
-                                                            }
-                                                        });
-                                                    }
-
-                                                    // Listen for the input event to trigger the genre fetch
-                                                    tagify.on('input', function(e) {
-                                                        var value = e.detail.value;
-                                                        if (value.length > 1) {
-                                                            // Fetch genres only if input is longer than 1 character
-                                                            fetchGenres(value);
-                                                        }
-                                                    });
-
-                                                tagify.removeAllTags();
-                                                tagify.addTags(genres);
-
-                                                // Fetch and display cast data
-                                                fetchMovieCasts(selectedMovie.id);
-                                            },
-                                            error: function() {
-                                                alert('Failed to fetch full movie details.');
-                                            }
-                                        });
-
+                                        fetchMovieDetails(selectedMovie.id);
                                         $suggestions.empty();
                                     });
 
@@ -421,7 +432,6 @@
                                     .html(`<strong>${movie.title}</strong><br><small>${releaseYear}</small>`);
 
                                 movieItem.append(posterImage).append(movieInfo);
-
                                 $suggestions.append(movieItem);
                             });
 
@@ -442,8 +452,65 @@
                 $suggestions.hide();
             }
         });
+
+        // Fetch full movie details, genres, and casts
+        function fetchMovieDetails(movieId) {
+            $.ajax({
+                url: 'https://api.themoviedb.org/3/movie/' + movieId,
+                data: {
+                    api_key: apiKey
+                },
+                success: function(movieDetails) {
+                    // Set movie data in form
+                    $movieTitle.val(movieDetails.title);
+                    $('#movieId').val(movieDetails.id);
+                    $('#description').val(movieDetails.overview);
+                    var posterUrl = movieDetails.poster_path ? 'https://image.tmdb.org/t/p/w500' + movieDetails.poster_path : '{{ url('upload/blog_images.png') }}';
+                    $('#photoPreview').attr('src', posterUrl);
+                    $('#release_date').val(new Date(movieDetails.release_date).getFullYear());
+                    $('#runtime').val(movieDetails.runtime + ' minutes');
+                    $('#rating').val(movieDetails.vote_average.toFixed(1));
+
+                    // Set genres and casts in Tagify inputs
+                    var genres = movieDetails.genres.map(function(genre) {
+                        return genre.name + ' Movies';
+                    });
+
+                    tagifyGenres.removeAllTags();
+                    tagifyGenres.addTags(genres);
+
+                    // Custom fields
+                    $('#video_format').val('HD');
+                    $('#trailer').val('N/A');
+
+                    fetchMovieCasts(movieDetails.id);
+                },
+                error: function() {
+                    alert('Failed to fetch movie details.');
+                }
+            });
+        }
+
+        // Fetch and set movie cast details
+        function fetchMovieCasts(movieId) {
+            $.ajax({
+                url: 'https://api.themoviedb.org/3/movie/' + movieId + '/credits',
+                data: { api_key: apiKey },
+                success: function(response) {
+                    var casts = response.cast.map(function(castMember) {
+                        return castMember.name;
+                    });
+                    tagifyCasts.removeAllTags();
+                    tagifyCasts.addTags(casts);
+                },
+                error: function() {
+                    alert('Failed to fetch cast data.');
+                }
+            });
+        }
     });
 </script>
+
 
 
 @endsection

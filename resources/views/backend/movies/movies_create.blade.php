@@ -43,11 +43,11 @@
                                 </div>
                             @endif
 
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <div class="form-group col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="form-group">
                                                 <div class="file-input-container" id="fileInputContainer">
                                                     <input class="file-input" name="photo" type="file" id="photoInput" accept="image/*" style="display: none;"/>
                                                     <img id="photoPreview" class="file-input-preview" alt="Profile Photo Preview"
@@ -55,100 +55,52 @@
                                                     <button class="remove-button" id="removeButton" style="display: none;">&times;</button>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-10">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="name" class="form-label">Movie Code :<span
-                                                                class="text-red">*</span></label>
-                                                        <input type="text" class="form-control" placeholder="Name" name="code"
-                                                            autocomplete="name">
-                                                    </div>
-                                                </div>
-                                                <div class="col-8">
-                                                    <div class="form-group">
-                                                        <label for="title" class="form-label">Movie Title :<span class="text-red">*</span></label>
-                                                        <input type="text" id="movieTitle" class="form-control" placeholder="Type movie title" name="title" autocomplete="off">
-                                                        <input type="hidden" id="movieId" name="movie_id">
-                                                        <ul id="suggestions" class="list-group position-absolute" style="z-index: 1000; width:100%; max-height: 350px; overflow-y: auto; display: none;">
-                                                            </ul>
-                                                    </div>
-                                                </div>
+
+                                            <div class="form-group">
+                                                <label for="release_date" class="form-label">Release Date :</label>
+                                                <input type="text" id="release_date" class="form-control" placeholder="Release Date" name="release_date" autocomplete="off">
                                             </div>
 
                                             <div class="form-group">
-                                                <label for="short_descp" class="form-label">Short Description :</label>
-                                                <textarea class="form-control mb-4" rows="4" name="short_descp" id="short_description"></textarea>
+                                                <label for="runtime" class="form-label">Runtime :</label>
+                                                <input type="text" id="runtime" class="form-control" placeholder="Runtime" name="runtime" autocomplete="off">
                                             </div>
 
-                                            <div class="row">
-
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="release_date" class="form-label">Release Date :</label>
-                                                        <input type="text" id="release_date" class="form-control" placeholder="Release Date" name="release_date" autocomplete="off">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="runtime" class="form-label">Runtime :</label>
-                                                        <input type="text" id="runtime" class="form-control" placeholder="Runtime" name="runtime" autocomplete="off">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="rating" class="form-label">Rating :</label>
-                                                        <input type="text" id="rating" class="form-control" placeholder="Rating" name="rating" autocomplete="off">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="video_format" class="form-label">Quality :</label>
-                                                        <input type="text" id="video_format" class="form-control" placeholder="Quality" name="video_format" autocomplete="off">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="trailer" class="form-label">Trailer :</label>
-                                                        <input type="text" id="trailer" class="form-control" placeholder="Trailer" name="trailer" autocomplete="off">
-                                                    </div>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="rating" class="form-label">Rating :</label>
+                                                <input type="text" id="rating" class="form-control" placeholder="Rating" name="rating" autocomplete="off">
                                             </div>
 
-                                            <div class="row">
-    <div class="col-md-12">
-        <div class="form-group mb-4">
-            <label for="category_id" class="form-label">Categories:</label>
-            <input type="text" name="category_id" class="form-control" id="categories" required>
-        </div>
-    </div>
-</div>
-
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group mb-4">
-                                                        <label for="genre_id" class="form-label">Genres:</label>
-                                                        <input type="text" name="genre_id" class="form-control" id="genres" required>
-                                                    </div>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="video_format" class="form-label">Quality :</label>
+                                                <input type="text" id="video_format" class="form-control" placeholder="Quality" name="video_format" autocomplete="off">
                                             </div>
-
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group mb-4">
-                                                        <label for="cast_id" class="form-label">Casts:</label>
-                                                        <input type="text" name="cast_id" class="form-control" id="casts" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-
                                         </div>
-
                                     </div>
                                 </div>
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="name" class="form-label">Movie Code :<span
+                                                        class="text-red">*</span></label>
+                                                <input type="text" class="form-control" placeholder="Name" name="code"
+                                                    autocomplete="name">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="title" class="form-label">Movie Title :<span class="text-red">*</span></label>
+                                                <input type="text" id="movieTitle" class="form-control" placeholder="Type movie title" name="title" autocomplete="off">
+                                                <input type="hidden" id="movieId" name="movie_id">
+                                                <ul id="suggestions" class="list-group position-absolute" style="z-index: 1000; width:100%; max-height: 350px; overflow-y: auto; display: none;">
+                                                    </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
+
 
                             <div class="card">
                                 <div class="card-body">
@@ -480,7 +432,7 @@
                     tagifyGenres.addTags(genres);
 
                     // Custom fields
-                    $('#video_format').val('HD');
+                    $('#video_format').val('720P');
                     $('#trailer').val('N/A');
 
                     fetchMovieCasts(movieDetails.id);

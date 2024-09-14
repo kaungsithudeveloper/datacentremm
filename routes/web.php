@@ -195,7 +195,7 @@ Route::middleware(['auth','role:admin'])->group(function () {
 
         Route::get('/movies-category', function(){
             $categories = Category::where('type', 'movie')->pluck('name')->toArray();
-            return response()->json($categories); // Use response()->json for correct JSON response format
+            return response()->json($categories);
         });
 
         Route::get('/cast', function(Request $request) {
