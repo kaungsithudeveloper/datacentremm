@@ -97,7 +97,8 @@
                                             <div class="form-group">
                                                 <div class="file-input-container" id="fileInputContainer">
                                                     <input class="file-input" name="photo" type="file" id="photoInput" accept="image/*" style="display: none;" />
-                                                    <img id="photoPreview" class="file-input-preview" alt="Profile Photo Preview" src="{{ url('upload/profile.jpg') }}" style="display: block; max-width: 50%; object-fit: cover; margin: 0 auto;" />
+                                                    <img id="photoPreview" class="file-input-preview" alt="Profile Photo Preview"
+                                                        src="{{ url('upload/profile.jpg') }}" style="display: block; max-width: 50%; object-fit: cover; margin: 0 auto;" />
                                                     <button class="remove-button" id="removeButton" style="display: none;">&times;</button>
                                                 </div>
                                             </div>
@@ -136,6 +137,27 @@
 
                                         </div>
 
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="name" class="form-label">Selling Price :</label>
+                                                <input type="text" class="form-control" placeholder="Name"
+                                                    name="selling_price" autocomplete="name">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="name" class="form-label">Discount Price :</label>
+                                                <input type="text" class="form-control" placeholder="Name"
+                                                    name="discount_price" autocomplete="name">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -200,31 +222,14 @@
 
     </style>
 
+
     <!-- photo -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const fileInputContainer = document.getElementById('fileInputContainer');
             const photoInput = document.getElementById('photoInput');
             const photoPreview = document.getElementById('photoPreview');
-            const fileInputLabel = document.querySelector('.file-input-label');
             const removeButton = document.getElementById('removeButton');
-
-            // Check if there's an existing photo on load
-            if (photoPreview.src && !photoPreview.src.includes('profile.jpg')) {
-                fileInputLabel.style.display = 'none';
-                removeButton.style.display = 'block';
-            }
-
-            function previewPhoto(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    photoPreview.src = e.target.result;
-                    photoPreview.style.display = 'block';
-                    fileInputLabel.style.display = 'none';
-                    removeButton.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
 
             // Handle drag and drop events
             fileInputContainer.addEventListener('dragover', (e) => {
@@ -263,12 +268,21 @@
             removeButton.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                photoPreview.src = '{{ url('upload/profile.jpg') }}';
+                photoPreview.src = '{{ url('upload/profile.jpg') }}'; // Default image
                 photoPreview.style.display = 'block';
-                fileInputLabel.style.display = 'block';
                 removeButton.style.display = 'none';
                 photoInput.value = ''; // Clear the input
             });
+
+            function previewPhoto(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.src = e.target.result;
+                    photoPreview.style.display = 'block';
+                    removeButton.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
         });
 
     </script>
@@ -453,7 +467,7 @@
                     // Set movie data in form
                     $movieTitle.val(movieDetails.title);
                     $('#movieId').val(movieDetails.id);
-                    $('#description').val(movieDetails.overview);
+                    $('#short_description').val(movieDetails.overview);
                     var posterUrl = movieDetails.poster_path ? 'https://image.tmdb.org/t/p/w500' + movieDetails.poster_path : '{{ url('upload/blog_images.png') }}';
                     $('#photoPreview').attr('src', posterUrl);
                     $('#release_date').val(new Date(movieDetails.release_date).getFullYear());
