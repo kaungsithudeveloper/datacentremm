@@ -19,8 +19,10 @@ class CartController extends Controller
 {
     public function AddToCard(Request $request, $id){
 
-        $movie = Product::findOrfail($id);
+        // Find the movie/product
+        $data = Product::findOrFail($id);
 
+        // Check if the item is already in the cart
         $cartItem = Cart::search(function ($cartItem, $rowId) use ($id) {
             return $cartItem->id === $id;
         })->first();
@@ -29,46 +31,38 @@ class CartController extends Controller
             return response()->json(['error' => 'Item is already in your cart']);
         }
 
+        // Calculate the final price: selling_price minus discount_price if available
+        $price = $data->discount_price
+            ? $data->selling_price - $data->discount_price
+            : $data->selling_price;
 
-        if($movie->discount_price == NULL){
+        // Add the movie/product to the cart
+        Cart::add([
+            'id' => $id,
+            'name' => $request->movie_name,
+            'qty' => $request->quantity,
+            'price' => $price, // Use the calculated price
+            'weight' => 1,
+            'options' => [
+                'image' => $data->photo,
+            ],
+        ]);
 
-            Cart::add([
+        // Return the response with updated cart information
+        return response()->json([
+            'success' => 'Successfully Added to your Cart',
+            'cartQty' => Cart::count(),
+            'cartTotal' => Cart::subtotal(),
+        ]);
+    }
 
-                'id' => $id,
-                'name' => $request->movie_name,
-                'qty' => $request->quantity,
-                'price' => $movie->selling_price,
-                'weight' => 1,
-                'options' => [
-                    'image' => $movie->photo,
-                ],
-            ]);
-
-            return response()->json(['success' => 'Successfully Added on your Cart']);
-
-        }else{
-
-            Cart::add([
-
-                'id' => $id,
-                'name' => $request->movie_name,
-                'qty' => $request->quantity,
-                'price' => $movie->discount_price,
-                'weight' => 1,
-                'options' => [
-                    'image' => $movie->photo,
-                ],
-            ]);
-
-            return response()->json(['success' => 'Successfully Added on your Cart']);
-
-        }
-    }// End Method
 
     public function AddToCartDetails(Request $request, $id){
 
-        $movie = Product::findOrfail($id);
+        // Find the movie/product
+        $data = Product::findOrFail($id);
 
+        // Check if the item is already in the cart
         $cartItem = Cart::search(function ($cartItem, $rowId) use ($id) {
             return $cartItem->id === $id;
         })->first();
@@ -77,40 +71,29 @@ class CartController extends Controller
             return response()->json(['error' => 'Item is already in your cart']);
         }
 
+        // Calculate the final price: selling_price minus discount_price if available
+        $price = $data->discount_price
+            ? $data->selling_price - $data->discount_price
+            : $data->selling_price;
 
-        if($movie->discount_price == NULL){
+        // Add the movie/product to the cart
+        Cart::add([
+            'id' => $id,
+            'name' => $request->movie_name,
+            'qty' => $request->quantity,
+            'price' => $price, // Use the calculated price
+            'weight' => 1,
+            'options' => [
+                'image' => $data->photo,
+            ],
+        ]);
 
-            Cart::add([
-
-                'id' => $id,
-                'name' => $request->movie_name,
-                'qty' => $request->quantity,
-                'price' => $movie->selling_price,
-                'weight' => 1,
-                'options' => [
-                    'image' => $movie->photo,
-                ],
-            ]);
-
-            return response()->json(['success' => 'Successfully Added on your Cart']);
-
-        }else{
-
-            Cart::add([
-
-                'id' => $id,
-                'name' => $request->movie_name,
-                'qty' => $request->quantity,
-                'price' => $movie->discount_price,
-                'weight' => 1,
-                'options' => [
-                    'image' => $movie->photo,
-                ],
-            ]);
-
-            return response()->json(['success' => 'Successfully Added on your Cart']);
-
-        }
+        // Return the response with updated cart information
+        return response()->json([
+            'success' => 'Successfully Added to your Cart',
+            'cartQty' => Cart::count(),
+            'cartTotal' => Cart::subtotal(),
+        ]);
     }// End Method
 
     public function AddMiniCart(){
@@ -161,9 +144,8 @@ class CartController extends Controller
 
 
     public function CheckoutCreate(){
-
         if (Auth::check()) {
-            if (Cart::total() > 0) { 
+            if (Cart::total() > 0) {
                 $carts = Cart::content();
                 $cartQty = Cart::count();
                 $cartTotal = Cart::total();

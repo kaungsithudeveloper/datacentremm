@@ -43,6 +43,11 @@ class CheckoutController extends Controller
 
         $total_amount = round(Cart::total());
 
+        User::updateOrCreate(
+            ['id' =>Auth::id()], // Condition to check (e.g., find by user ID)
+            ['address' => $request->address] // Data to update or create
+        );
+
         $order_id = Order::insertGetId([
             'user_id' => Auth::id(),
             'name' => $request->name,

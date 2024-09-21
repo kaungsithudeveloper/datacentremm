@@ -110,7 +110,7 @@
                                     <i class="czi-heart"></i>
                                 </button>
 
-                                <a class=" d-block overflow-hidden" href="{{ route('dc.detail', $movie->id) }}">
+                                <a class=" d-block overflow-hidden" href="">
                                     <img src="{{ !empty($movie->product->photo) ? url('upload/product_images/' . $movie->product->photo) : url('upload/movie_image.jpg') }}"
                                         alt="Product">
                                 </a>
@@ -120,14 +120,14 @@
                                         <i class="sr-star czi-star-filled active">
                                             {{ $movie->product->rating }}</i>
                                     </div>
-                                    <a class="product-meta d-block font-size-xs mr-1" id="h-a">
                                         <div class="movie-title">
                                             Price-{{ $movie->product->selling_price }}Ks
-                                        </div>
+                                        </div>+
+
                                     </a>
                                 </div>
 
-                                <a href="{{ route('dc.detail', $movie->id) }}">
+                                <a href="">
                                     <div class="movie-title font-size-sm" id="mname_{{ $movie->product->id }}">
                                         {{ $movie->product->title }}
                                     </div>

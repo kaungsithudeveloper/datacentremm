@@ -226,7 +226,6 @@
         }
 
         function addToCart(movieId) {
-            // Get the product information
             var movieName = $('#mname_' + movieId).text();
             var quantity = $('#qty_' + movieId).val();
 
@@ -243,11 +242,15 @@
                 },
                 url: "/cart/data/store/" + movieId,
                 success: function(data) {
-                    //console.log(data);
+                    console.log(data);
 
-                    miniCart();
+                    // Update cart quantity and total
+                    $('#cartQty').text(data.cartQty);
+                    $('#cartTotal').text(data.cartTotal);
 
-                    // Start Message
+                    miniCart(); // Refresh the mini cart
+
+                    // Display success or error message
                     const Toast = Swal.mixin({
                         toast: true,
                         position: 'top-end',
@@ -266,13 +269,14 @@
                             title: data.error,
                         });
                     }
-                    // End Message
                 },
                 error: function(error) {
                     console.error('Error adding to cart:', error);
                 }
             });
         }
+
+
 
         function miniCart() {
             $.ajax({
@@ -363,7 +367,7 @@
                 url: '/get-cart-product',
                 dataType: 'json',
                 success: function(response) {
-                    // console.log(response)
+                    console.log(response)
 
                     var cartTotalWithSymbol = response.cartTotal + ' Ks';
 
