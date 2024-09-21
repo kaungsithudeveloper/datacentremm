@@ -26,9 +26,7 @@ class UserController extends Controller
         $user = User::find($id);
         $orders = Order::where('user_id',$id)->orderBy('id','DESC')->paginate(6);
         $ordersCount = $orders->count();
-        $wishlist = Wishlist::with(['product.categories'])->where('user_id', Auth::id())->latest()->get();
-        $wishQty = $wishlist->count();
-        return view('frontend.users.user_account',compact('user','ordersCount','wishQty'));
+        return view('frontend.users.user_account',compact('user','ordersCount'));
 
     } // End Method
 
@@ -69,9 +67,7 @@ class UserController extends Controller
         $user = User::find($id);
         $orders = Order::where('user_id',$id)->orderBy('id','DESC')->paginate(6);
         $ordersCount = $orders->count();
-        $wishlist = Wishlist::with(['product.categories'])->where('user_id', Auth::id())->latest()->get();
-        $wishQty = $wishlist->count();
-        return view('frontend.users.user_password',compact('user', 'ordersCount','wishQty'));
+        return view('frontend.users.user_password',compact('user', 'ordersCount'));
 
     } // End Method
 
@@ -102,21 +98,19 @@ class UserController extends Controller
         $user = User::find($id);
         $orders = Order::where('user_id',$id)->orderBy('id','DESC')->paginate(6);
         $ordersCount = $orders->count();
-        $wishlist = Wishlist::with(['product.categories'])->where('user_id', Auth::id())->latest()->get();
-        $wishQty = $wishlist->count();
-        return view('frontend.users.user_order',compact('orders', 'ordersCount','user','wishQty'));
+
+        return view('frontend.users.user_order',compact('orders', 'ordersCount','user'));
     }// End Method
 
     public function UserOrderDetails($order_id){
         $id = Auth::user()->id;
         $user = User::find($id);
-        $wishlist = Wishlist::with(['product.categories'])->where('user_id', Auth::id())->latest()->get();
-        $wishQty = $wishlist->count();
+
         $order = Order::with('user')->where('id',$order_id)->where('user_id',Auth::id())->first();
         $orderItem = OrderItem::with('product')->where('order_id',$order_id)->orderBy('id','DESC')->get();
         $ordersCount = $order->count();
 
-        return view('frontend.users.order_details',compact('order','orderItem','ordersCount','wishQty','user'));
+        return view('frontend.users.order_details',compact('order','orderItem','ordersCount','user'));
 
     }// End Method
 

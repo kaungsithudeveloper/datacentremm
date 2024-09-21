@@ -63,13 +63,6 @@
                                 <span class="font-size-sm text-muted ml-auto">{{ $ordersCount }}</span>
                             </a>
                         </li>
-                        <li class="border-bottom mb-0">
-                            <a class="nav-link-style d-flex align-items-center px-4 py-3 active"
-                                href="{{ route('wishlist') }}" id="h-a">
-                                <i class="czi-heart opacity-60 mr-2"></i>Wishlist
-                                <span class="font-size-sm text-muted ml-auto">{{ $wishQty }}</span>
-                            </a>
-                        </li>
                         <li class="m-3">
                             <a class="btn btn-primary btn-shadow btn-block mt-4" href="{{ route('user.logout') }}">
                                 <i class="czi-sign-out mr-2"></i>Sign
