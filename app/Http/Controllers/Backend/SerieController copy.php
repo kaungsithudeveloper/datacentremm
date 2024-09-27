@@ -14,19 +14,20 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Intervention\Image\Facades\Image;
+use Image;
 
-class MovieController extends Controller
+
+class SerieController extends Controller
 {
-    public function Movies()
+    public function Series()
     {
-        $movies = Product::where('type', 'movie')->latest()->get();
-        $activeMovies = Product::where('type', 'movie')->where('status', 1)->latest()->get();
-        $inActiveMovies = Product::where('type', 'movie')->where('status', 0)->latest()->get();
-        return view('backend.movies.movies_index',compact('movies','activeMovies','inActiveMovies'));
+        $series = Product::where('type', 'serie')->latest()->get();
+        $activeSeries = Product::where('type', 'serie')->where('status', 1)->latest()->get();
+        $inActiveSeries = Product::where('type', 'serie')->where('status', 0)->latest()->get();
+        return view('backend.series.series_index',compact('series','activeSeries','inActiveSeries'));
     }// End Method
 
-    public function MovieInactive($id)
+    public function SerieInactive($id)
     {
 
         Product::findOrFail($id)->update(['status' => 0]);
@@ -39,7 +40,7 @@ class MovieController extends Controller
 
     }// End Method
 
-    public function MovieActive($id)
+    public function SerieActive($id)
     {
 
         Product::findOrFail($id)->update(['status' => 1]);
@@ -52,12 +53,12 @@ class MovieController extends Controller
 
     }// End Method
 
-    public function MoviesCreate()
+    public function SeriesCreate()
     {
-        return view('backend.movies.movies_create');
+        return view('backend.series.series_create');
     }// End Method
 
-    public function MovieStore(Request $request)
+    public function SeriesStore(Request $request)
     {
         //Log::info($request->all());
         //dd($request->all());
@@ -161,49 +162,47 @@ class MovieController extends Controller
             'message' => 'Movie Created Successfully',
             'alert-type' => 'success',
         ]);
-    }
 
-    public function MovieEdit($id)
-    {
-        $movie = Product::find($id);
-        $categories = $movie->categories;
-        $genres = $movie->genres;
-        $casts = $movie->casts;
-        return view('backend.movies.movies_edit', compact('id', 'movie', 'categories', 'genres','casts'));
     }// End Method
 
-    public function MovieUpdate(Request $request)
+    public function SerieEdit($id)
     {
+        $serie = Product::find($id);
+        $categories = $serie->series_categories;
+        $genres = $serie->series_genres;
+        $casts = $serie->series_casts;
+        return view('backend.series.series_edit', compact('id', 'serie', 'categories', 'genres','casts'));
+    }// End Method
 
-        //dd($request->all());
-
+    public function SerieUpdate(Request $request)
+    {
         $id = $request->id;
-        $movie = Product::find($id);
-        $movie->title = $request->title;
-        $movie->code = $request->code;
-        $movie->slug = strtolower(str_replace(' ', '-', $request->input('title')));
-        $movie->description = $request->description;
-        $movie->short_descp = $request->short_descp;
-        $movie->release_date = $request->release_date;
-        $movie->runtime = $request->runtime;
-        $movie->video_format = $request->video_format;
-        $movie->rating = $request->rating;
-        $movie->trailer = $request->trailer;
-        $movie->selling_price = $request->selling_price;
-        $movie->discount_price = $request->discount_price;
-        $movie->user_id = auth()->user()->id;
-        $movie->type = 'movie';
-        $movie->status = 1;
+        $serie = Product::find($id);
+        $serie->title = $request->title;
+        $serie->code = $request->code;
+        $serie->slug = strtolower(str_replace(' ', '-', $request->input('title')));
+        $serie->description = $request->description;
+        $serie->short_descp = $request->short_descp;
+        $serie->release_date = $request->release_date;
+        $serie->runtime = $request->runtime;
+        $serie->video_format = $request->video_format;
+        $serie->rating = $request->rating;
+        $serie->trailer = $request->trailer;
+        $serie->selling_price = $request->selling_price;
+        $serie->discount_price = $request->discount_price;
+        $serie->user_id = auth()->user()->id;
+        $serie->type = 'serie';
+        $serie->status = 1;
 
         if ($request->file('photo')) {
             $file = $request->file('photo');
-            @unlink(public_path('upload/product_images/'.$movie->photo));
+            @unlink(public_path('upload/product_images/'.$data->photo));
             $filename = date('YmdHi').$file->getClientOriginalName();
             $file->move(public_path('upload/product_images'),$filename);
-            $movie['photo'] = $filename;
+            $serie['photo'] = $filename;
         }
 
-        $movie->save();
+        $serie->save();
 
         // Update PostCategories
         $categoryNames = explode(',', $request->input('category_id'));
@@ -211,11 +210,11 @@ class MovieController extends Controller
         foreach ($categoryNames as $categoryName) {
             $category = Category::firstOrCreate(['name' => trim($categoryName)]);
             $category->slug = Str::slug($category->name);
-            $category->type = 'movie';
+            $category->type = 'serie';
             $category->save();
             $categoryIds[] = $category->id;
         }
-        $movie->categories()->sync($categoryIds);
+        $serie->series_categories()->sync($categoryIds);
 
         // Update PostTags
         $genreNames = explode(',', $request->input('genre_id'));
@@ -223,11 +222,11 @@ class MovieController extends Controller
         foreach ($genreNames as $genreName) {
             $genre = Genre::firstOrCreate(['name' => trim($genreName)]);
             $genre->slug = Str::slug($genre->name);
-            $genre->type = 'movie';
+            $genre->type = 'serie';
             $genre->save();
             $genreIds[] = $genre->id;
         }
-        $movie->genres()->sync($genreIds);
+        $serie->series_genres()->sync($genreIds);
 
         // Update PostTags
         $castNames = explode(',', $request->input('cast_id'));
@@ -238,34 +237,31 @@ class MovieController extends Controller
             $cast->save();
             $castIds[] = $cast->id;
         }
-        $movie->casts()->sync($castIds);
+        $serie->casts()->sync($castIds);
 
         $notification = array(
-            'message' => 'Movie Updated Successfully',
+            'message' => 'Serie Updated Successfully',
             'alert-type' => 'success'
         );
 
-        return redirect()->route('movies')->with($notification);
+        return redirect()->route('series')->with($notification);
     }// End Method
 
-    public function MovieDestroy($id)
+    public function SerieDestroy($id)
     {
-        $movie = Product::findOrFail($id);
-        $imagePath = public_path('upload/product_images/' . $movie->photo);
+        $serie = Product::findOrFail($id);
+        $imagePath = public_path('upload/product_images/' . $serie->photo);
         if (file_exists($imagePath) && is_file($imagePath)) {
             unlink($imagePath);
         }
 
-        $movie->delete();
+        $serie->delete();
 
         $notification = array(
-            'message' => 'Movie Deleted Successfully',
+            'message' => 'Serie Deleted Successfully',
             'alert-type' => 'success'
         );
 
-        return redirect()->route('movies')->with($notification);
+        return redirect()->route('series')->with($notification);
     }// End Method
-
-
-
 }

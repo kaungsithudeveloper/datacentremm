@@ -35,6 +35,7 @@ use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\CheckoutController;
 
 use App\Http\Controllers\MoviesController;
+use App\Http\Controllers\TvShowController;
 use Illuminate\Http\Request;
 
 /*
@@ -396,3 +397,6 @@ require __DIR__.'/auth.php';
 
 Route::get('/movies/create', [MoviesController::class, 'create']);
 Route::get('/movies/{id}', [MoviesController::class, 'show']);
+
+Route::get('/tvshows', [TvShowController::class, 'index'])->name('tvshows.index');
+Route::get('/tvshows/search', [TvShowController::class, 'search'])->name('tvshows.search');

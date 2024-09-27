@@ -69,6 +69,11 @@
                                             </div>
 
                                             <div class="form-group">
+                                                <label for="short_descp" class="form-label">Short Description :</label>
+                                                <textarea class="form-control mb-4" rows="4" name="short_descp" id="short_description"></textarea>
+                                            </div>
+
+                                            <div class="form-group">
                                                 <label for="description" class="form-label">Movie Description :</label>
                                                 <textarea name="description" id="myTextarea" class="content"></textarea>
                                             </div>
@@ -102,14 +107,21 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group">
-                                                <label for="short_descp" class="form-label">Short Description :</label>
-                                                <textarea class="form-control mb-4" rows="4" name="short_descp" id="short_description"></textarea>
-                                            </div>
-
                                             <div class="form-group mb-4">
                                                 <label for="category_id" class="form-label">Categories:</label>
                                                 <input type="text" name="category_id" class="form-control" id="categories" required>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="name" class="form-label">Selling Price :</label>
+                                                <input type="text" class="form-control" placeholder="Name"
+                                                    name="selling_price" autocomplete="name">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="name" class="form-label">Discount Price :</label>
+                                                <input type="text" class="form-control" placeholder="Name"
+                                                    name="discount_price" autocomplete="name">
                                             </div>
 
                                             <div class="form-group">
@@ -453,9 +465,8 @@
                     // Set movie data in form
                     $movieTitle.val(movieDetails.title);
                     $('#movieId').val(movieDetails.id);
-                    $('#description').val(movieDetails.overview);
-                    var posterUrl = movieDetails.poster_path ? 'https://image.tmdb.org/t/p/w500' + movieDetails.poster_path : '{{ url('upload/blog_images.png') }}';
-                    $('#photoPreview').attr('src', posterUrl);
+                    $('#short_description').val(movieDetails.overview);
+
                     $('#release_date').val(new Date(movieDetails.release_date).getFullYear());
                     $('#runtime').val(movieDetails.runtime + ' minutes');
                     $('#rating').val(movieDetails.vote_average.toFixed(1));

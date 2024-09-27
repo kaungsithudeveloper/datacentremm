@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Image;
+use Intervention\Image\Facades\Image;
 
 
 class SerieController extends Controller
@@ -60,6 +60,7 @@ class SerieController extends Controller
 
     public function SeriesStore(Request $request)
     {
+        //Log::info($request->all());
         //dd($request->all());
         // Validate the request
         $validatedData = $request->validate([
@@ -68,6 +69,7 @@ class SerieController extends Controller
             'description' => 'required',
             'short_descp' => 'required',
             'release_date' => 'required',
+            'runtime' => 'required',
             'video_format' => 'required',
             'rating' => 'required',
             'trailer' => 'required',
@@ -79,18 +81,17 @@ class SerieController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Check if product with the given code already exists
         $existingProduct = Product::where('code', $validatedData['code'])->first();
-
         if ($existingProduct) {
-            $notification = [
+            return redirect()->back()->withInput()->withErrors([
                 'message' => 'Series with the given code already exists.',
-                'alert-type' => 'error',
-            ];
-
-            return redirect()->back()->withInput()->with($notification);
+            ]);
         }
 
-        if ($request->file('photo')) {
+        // Handle file upload if photo is provided
+        $imageName = null;
+        if ($request->hasFile('photo')) {
             $image = $request->file('photo');
             $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
             $imagePath = 'upload/product_images/' . $name_gen;
@@ -98,15 +99,16 @@ class SerieController extends Controller
             $imageName = $name_gen;
         }
 
+        // Create new product (movie)
         $serie = new Product();
-        $serie->title = $validatedData['title'];
         $serie->code = $validatedData['code'];
-        $serie->slug = strtolower(str_replace(' ', '-', $request->input('title')));
+        $serie->title = $validatedData['title'];
+        $serie->slug = strtolower(str_replace(' ', '-', $validatedData['title']));
         $serie->description = $validatedData['description'];
         $serie->short_descp = $validatedData['short_descp'];
         $serie->release_date = $validatedData['release_date'];
+        $serie->runtime = $validatedData['runtime'];
         $serie->video_format = $validatedData['video_format'];
-        $serie->runtime = $request->runtime;
         $serie->rating = $validatedData['rating'];
         $serie->trailer = $validatedData['trailer'];
         $serie->selling_price = $validatedData['selling_price'];
@@ -117,56 +119,49 @@ class SerieController extends Controller
         $serie->status = 1;
         $serie->save();
 
+        // Process categories
         if (!empty($validatedData['category_id'])) {
-            $categoryNames = explode(',', $validatedData['category_id']);
-            foreach ($categoryNames as $categoryName) {
-                $category = Category::firstOrCreate(['name' => trim($categoryName)]);
-                $category->slug = Str::slug($category->name);
-                $category->type = 'serie';
-                $category->save();
-                $serie->series_categories()->attach($category->id);
+            $categoryArray = json_decode($validatedData['category_id'], true);
+            foreach ($categoryArray as $categoryItem) {
+                $categoryName = $categoryItem['value'];
+                $category = Category::firstOrCreate(['name' => trim($categoryName)], [
+                    'slug' => Str::slug($categoryName),
+                    'type' => 'serie',
+                ]);
+                $serie->categories()->attach($category->id);
             }
         }
 
+        // Process genres
         if (!empty($validatedData['genre_id'])) {
-            $genreNames = explode(',', $validatedData['genre_id']);
-
-            foreach ($genreNames as $genreName) {
-                $genreName = trim($genreName);
-                $genre = Genre::firstOrCreate(['name' => $genreName]);
-                $genre->slug = Str::slug($genre->name); // Generate slug for the tag name
-                $genre->type = 'serie';
-                $genre->save();
-
-                // Check if the tag is already attached to the blog post
-                if (!$serie->genres->contains($genre->id)) {
-                    $serie->series_genres()->attach($genre->id);
-                }
+            $genreArray = json_decode($validatedData['genre_id'], true);
+            foreach ($genreArray as $genreItem) {
+                $genreName = $genreItem['value'];
+                $genre = Genre::firstOrCreate(['name' => trim($genreName)], [
+                    'slug' => Str::slug($genreName),
+                    'type' => 'serie',
+                ]);
+                $serie->genres()->attach($genre->id);
             }
         }
 
+        // Process casts
         if (!empty($validatedData['cast_id'])) {
-            $castNames = explode(',', $validatedData['cast_id']);
-
-            foreach ($castNames as $castName) {
-                $castName = trim($castName);
-                $cast = Cast::firstOrCreate(['name' => $castName]);
-                $cast->slug = Str::slug($cast->name); // Generate slug for the tag name
-                $cast->save();
-
-                // Check if the tag is already attached to the blog post
-                if (!$serie->casts->contains($cast->id)) {
-                    $serie->casts()->attach($cast->id);
-                }
+            $castArray = json_decode($validatedData['cast_id'], true);
+            foreach ($castArray as $castItem) {
+                $castName = $castItem['value'];
+                $cast = Cast::firstOrCreate(['name' => trim($castName)], [
+                    'slug' => Str::slug($castName),
+                ]);
+                $serie->casts()->attach($cast->id);
             }
         }
 
-        $notification = [
-            'message' => 'Serie Created Successfully',
-            'alert-type' => 'success'
-        ];
-
-        return redirect()->route('series')->with($notification);
+        // Success notification
+        return redirect()->route('series')->with([
+            'message' => 'Movie Created Successfully',
+            'alert-type' => 'success',
+        ]);
 
     }// End Method
 
