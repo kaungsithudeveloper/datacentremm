@@ -85,7 +85,7 @@ class SerieController extends Controller
         $existingProduct = Product::where('code', $validatedData['code'])->first();
         if ($existingProduct) {
             return redirect()->back()->withInput()->withErrors([
-                'message' => 'Series with the given code already exists.',
+                'message' => 'Movies with the given code already exists.',
             ]);
         }
 
@@ -128,7 +128,7 @@ class SerieController extends Controller
                     'slug' => Str::slug($categoryName),
                     'type' => 'serie',
                 ]);
-                $serie->categories()->attach($category->id);
+                $serie->series_categories()->attach($category->id);
             }
         }
 
@@ -141,7 +141,7 @@ class SerieController extends Controller
                     'slug' => Str::slug($genreName),
                     'type' => 'serie',
                 ]);
-                $serie->genres()->attach($genre->id);
+                $serie->series_genres()->attach($genre->id);
             }
         }
 

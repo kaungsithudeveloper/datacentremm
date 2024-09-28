@@ -133,6 +133,7 @@
                                                 <input type="text" id="trailer" class="form-control" placeholder="Trailer" name="trailer" autocomplete="off">
                                             </div>
 
+
                                             <div class="form-group">
                                                 <label for="runtime" class="form-label">Runtime :</label>
                                                 <input type="text" id="runtime" class="form-control" placeholder="Runtime" name="runtime" autocomplete="off">
@@ -146,18 +147,18 @@
                                                 <input type="text" id="video_format" class="form-control" placeholder="Quality" name="video_format" autocomplete="off">
                                             </div>
 
-                                            <button type="submit" class="btn btn-primary">Create Serie</button>
-                                            <a href="{{ route('series') }}" class="btn btn-danger float-end">Discard</a>
-
                                         </div>
-
-
 
                                     </div>
                                 </div>
                             </div>
 
-
+                            <div class="card">
+                                <div class="card-body">
+                                    <button type="submit" class="btn btn-primary">Create Serie</button>
+                                    <a href="{{ route('series') }}" class="btn btn-danger float-end">Discard</a>
+                                </div>
+                            </div>
 
                         </form>
                     </div>
@@ -168,6 +169,19 @@
         </div>
     </div>
     <!-- app-content close -->
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#photo').change(function(e) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#showImage').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(e.target.files['0']);
+            });
+        });
+    </script>
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -244,70 +258,6 @@
                 },
             });
         });
-    </script>
-
-    <!-- photo -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const fileInputContainer = document.getElementById('fileInputContainer');
-            const photoInput = document.getElementById('photoInput');
-            const photoPreview = document.getElementById('photoPreview');
-            const removeButton = document.getElementById('removeButton');
-
-            // Handle drag and drop events
-            fileInputContainer.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                fileInputContainer.classList.add('dragover');
-            });
-
-            fileInputContainer.addEventListener('dragleave', () => {
-                fileInputContainer.classList.remove('dragover');
-            });
-
-            fileInputContainer.addEventListener('drop', (e) => {
-                e.preventDefault();
-                fileInputContainer.classList.remove('dragover');
-                const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    previewPhoto(file);
-                    photoInput.files = e.dataTransfer.files; // Set the dropped file to the input
-                }
-            });
-
-            // Handle click event to trigger file input
-            fileInputContainer.addEventListener('click', () => {
-                photoInput.click();
-            });
-
-            // Handle file input change event
-            photoInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    previewPhoto(file);
-                }
-            });
-
-            // Remove photo functionality
-            removeButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                photoPreview.src = '{{ url('upload/profile.jpg') }}'; // Default image
-                photoPreview.style.display = 'block';
-                removeButton.style.display = 'none';
-                photoInput.value = ''; // Clear the input
-            });
-
-            function previewPhoto(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    photoPreview.src = e.target.result;
-                    photoPreview.style.display = 'block';
-                    removeButton.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
     </script>
 
 <script type="text/javascript">
@@ -488,7 +438,7 @@
                     $('#short_description').val(seriesDetails.overview);
 
                     $('#release_date').val(new Date(seriesDetails.first_air_date).getFullYear());
-                    $('#runtime').val(seriesDetails.last_episode_to_air.runtime + ' minutes'); // Assuming first runtime
+                    $('#runtime').val(seriesDetails.episode_run_time[0] + ' minutes'); // Assuming first runtime
                     $('#rating').val(seriesDetails.vote_average.toFixed(1));
 
                     // Set genres and casts in Tagify inputs
@@ -514,9 +464,7 @@
         // Fetch and set series cast details
         function fetchSeriesCasts(seriesId) {
             $.ajax({
-
-                url: 'https://api.themoviedb.org/3/tv/' + seriesId + '/aggregate_credits',
-
+                url: 'https://api.themoviedb.org/3/tv/' + seriesId + '/credits',
                 data: {
                     api_key: apiKey
                 },

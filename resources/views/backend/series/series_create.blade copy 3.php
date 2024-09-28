@@ -133,6 +133,7 @@
                                                 <input type="text" id="trailer" class="form-control" placeholder="Trailer" name="trailer" autocomplete="off">
                                             </div>
 
+
                                             <div class="form-group">
                                                 <label for="runtime" class="form-label">Runtime :</label>
                                                 <input type="text" id="runtime" class="form-control" placeholder="Runtime" name="runtime" autocomplete="off">
@@ -146,18 +147,18 @@
                                                 <input type="text" id="video_format" class="form-control" placeholder="Quality" name="video_format" autocomplete="off">
                                             </div>
 
-                                            <button type="submit" class="btn btn-primary">Create Serie</button>
-                                            <a href="{{ route('series') }}" class="btn btn-danger float-end">Discard</a>
-
                                         </div>
-
-
 
                                     </div>
                                 </div>
                             </div>
 
-
+                            <div class="card">
+                                <div class="card-body">
+                                    <button type="submit" class="btn btn-primary">Create Serie</button>
+                                    <a href="{{ route('series') }}" class="btn btn-danger float-end">Discard</a>
+                                </div>
+                            </div>
 
                         </form>
                     </div>
@@ -487,8 +488,12 @@
                     $('#serieId').val(seriesDetails.id);
                     $('#short_description').val(seriesDetails.overview);
 
+                    var posterUrl = seriesDetails.poster_path ? 'https://image.tmdb.org/t/p/w92' + seriesDetails.poster_path : '{{ url('upload/blog_images.png') }}';
+
+                    $('#photoPreview').attr('src', posterUrl);
+
                     $('#release_date').val(new Date(seriesDetails.first_air_date).getFullYear());
-                    $('#runtime').val(seriesDetails.last_episode_to_air.runtime + ' minutes'); // Assuming first runtime
+                    $('#runtime').val(seriesDetails.episode_run_time[0] + ' minutes'); // Assuming first runtime
                     $('#rating').val(seriesDetails.vote_average.toFixed(1));
 
                     // Set genres and casts in Tagify inputs
